@@ -9,8 +9,8 @@ on:
          default: 'develop'
 
 jobs:
-  tests-call-te:
-     if: ${{ inputs.ref }} == 'te-1_workflow_call'
-     uses: sammnnz/geompy/.github/workflows/tests-ub-win.yml@te-1_workflow_call
+  tests-call-develop:
+     if: ${{inputs.ref == 'develop'}}
+     uses: sammnnz/geompy/.github/workflows/tests-ub-win.yml@develop
      with:
         ref: ${{inputs.ref}}
