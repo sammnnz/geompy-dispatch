@@ -66,9 +66,21 @@ jobs:
                exit 1
              fi
         shell: bash
+      - id: typecheck
+        run: |
+             if [ ${{inputs.typecheck}} == 'true' ]; then
+               echo "value=true" >> $GITHUB_OUTPUT
+             elif [ ${{inputs.typecheck}} == 'false' ]; then
+               echo "value=" >> $GITHUB_OUTPUT
+             else
+               echo "Invalid argument: lint must be true or false."
+               exit 1
+             fi
+        shell: bash
                
    outputs:
       lint: ${{ steps.lint.outputs.value }}
+      typecheck: ${{ steps.typecheck.outputs.value }}
 
   _echo:
      needs: pre
@@ -76,6 +88,7 @@ jobs:
      steps:
         - run: |
            echo "${{needs.pre.outputs.lint}}"
+           echo "${{needs.pre.outputs.typecheck}}"
    
 
   # tests-call-develop:
