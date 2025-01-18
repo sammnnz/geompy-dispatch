@@ -12,3 +12,5 @@ jobs:
   tests-call-develop:
      if: ${{inputs.ref}} == 'develop'
      uses: sammnnz/geompy/.github/workflows/tests-ub-win.yml@develop
+     with:
+        ref: ${{inputs.ref}}
