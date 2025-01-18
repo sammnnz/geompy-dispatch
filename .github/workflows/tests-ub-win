@@ -1,0 +1,14 @@
+name: Tests-ub-win
+
+on:
+   workflow_dispatch:
+     inputs:
+       ref:
+         required: true
+         type: string
+         default: 'develop'
+
+jobs:
+  tests-call-develop:
+     if: ${{inputs.ref}} == 'develop'
+     uses: sammnnz/geompy/.github/workflows/tests-ub-win.yml@develop
