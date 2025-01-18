@@ -57,9 +57,9 @@ jobs:
    steps:
       - id: lint
         run: |
-             if [ ${{inputs.lint}} == 'true' ]; then
+             if [ ${{inputs.lint}} == true ]; then
                echo "value=true" >> $GITHUB_OUTPUT
-             elif [ ${{inputs.lint}} == 'false']; then
+             elif [ ${{inputs.lint}} == false]; then
                echo "value=" >> $GITHUB_OUTPUT
              else
                echo "Invalid argument: lint must be true or false."
