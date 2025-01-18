@@ -81,23 +81,22 @@ jobs:
    outputs:
       lint: ${{ steps.lint.outputs.value }}
       typecheck: ${{ steps.typecheck.outputs.value }}
-
-  _echo:
-     needs: pre
-     runs-on: ubuntu-latest
-     steps:
-        - run: |
-           echo "${{needs.pre.outputs.lint}}"
-           echo "${{needs.pre.outputs.typecheck}}"
    
+  tests-call-develop:
+     needs: pre
+     if: ${{inputs.ref}} == 'develop'
+     uses: sammnnz/geompy/.github/workflows/tests.yml@develop
+     with:
+       ref: ${{inputs.ref}}
+       os: ${{inputs.os}}
+       py: ${{inputs.py}}
+       lint: ${{needs.pre.outputs.lint}}
+       typecheck: ${{needs.pre.outputs.typecheck}}
 
-  # tests-call-develop:
+  # _echo:
   #    needs: pre
-  #    if: ${{inputs.ref}} == 'develop'
-  #    uses: sammnnz/geompy/.github/workflows/tests.yml@develop
-  #    with:
-  #      ref: ${{inputs.ref}}
-  #      os: ${{inputs.os}}
-  #      py: ${{inputs.py}}
-  #      lint: ${{inputs.lint}}
-  #      typecheck: ${{inputs.typecheck}}
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #       - run: |
+  #          echo "${{needs.pre.outputs.lint}}"
+  #          echo "${{needs.pre.outputs.typecheck}}"
