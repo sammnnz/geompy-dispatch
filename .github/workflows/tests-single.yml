@@ -1,4 +1,4 @@
-name: Tests-single
+name: Tests-${{inputs.os}}-${{inputs.py}}
 
 on:
    workflow_dispatch:
@@ -38,29 +38,53 @@ on:
          - '3.10'
        lint:
          required: false
-         type: string
-         default: ''
+         type: choice
+         default: 'false'
+         options:
+         - 'true'
+         - 'false'
        typecheck:
          required: false
-         type: string
-         default: ''
+         type: choice
+         default: 'false'
+         options:
+         - 'true'
+         - 'false'
 
 jobs:
-  # tests-call-main:
-  #    if: ${{inputs.ref}} == 'main'
-  #    uses: sammnnz/geompy/.github/workflows/tests.yml@main
+  pre:
+   runs-on: ubuntu-latest
+   steps:
+      - id: lint
+        run: |
+             if [ ${{inputs.lint}} == 'true' ]; then
+               echo "value=true" >> $GITHUB_OUTPUT
+             elif [ ${{inputs.lint}} == 'false']; then
+               echo "value=" >> $GITHUB_OUTPUT
+             else
+               echo "Invalid argument: lint must be true or false."
+               exit 1
+             fi
+        shell: bash
+               
+   outputs:
+      lint: ${{ steps.lint.outputs.value }}
+
+  _echo:
+     needs: pre
+     runs-on: ubuntu-latest
+     steps:
+        - run: |
+           echo "${{needs.pre.outputs.lint}}"
+   
+
+  # tests-call-develop:
+  #    needs: pre
+  #    if: ${{inputs.ref}} == 'develop'
+  #    uses: sammnnz/geompy/.github/workflows/tests.yml@develop
   #    with:
+  #      ref: ${{inputs.ref}}
   #      os: ${{inputs.os}}
   #      py: ${{inputs.py}}
   #      lint: ${{inputs.lint}}
   #      typecheck: ${{inputs.typecheck}}
-
-  tests-call-develop:
-     if: ${{inputs.ref}} == 'develop'
-     uses: sammnnz/geompy/.github/workflows/tests.yml@develop
-     with:
-       ref: ${{inputs.ref}}
-       os: ${{inputs.os}}
-       py: ${{inputs.py}}
-       lint: ${{inputs.lint}}
-       typecheck: ${{inputs.typecheck}}
