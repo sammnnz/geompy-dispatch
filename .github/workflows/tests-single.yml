@@ -59,6 +59,7 @@ jobs:
      if: ${{inputs.ref}} == 'develop'
      uses: sammnnz/geompy/.github/workflows/tests.yml@develop
      with:
+       ref: ${{inputs.ref}}
        os: ${{inputs.os}}
        py: ${{inputs.py}}
        lint: ${{inputs.lint}}
