@@ -1,0 +1,84 @@
+name: CLI-Remotecall
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        required: true
+        type: string
+        default: 'develop'
+      workflow_id:
+        required: true
+        type: string
+        default: 'tests-os-py.yml'
+      arg-1:
+        required: false
+        type: string
+      arg-2:
+        required: false
+        type: string
+      arg-3:
+        required: false
+        type: string
+      arg-4:
+        required: false
+        type: string
+      arg-5:
+        required: false
+        type: string
+      arg-6:
+        required: false
+        type: string
+      arg-7:
+        required: false
+        type: string
+      arg-8:
+        required: false
+        type: string
+
+jobs:
+  pre:
+    runs-on: windows-latest
+    steps:
+      - id: parse
+        run: |
+          ARGS=""
+          for arg in \
+          "${{inputs.arg-1}}" \
+          "${{inputs.arg-2}}" \
+          "${{inputs.arg-3}}" \
+          "${{inputs.arg-4}}" \
+          "${{inputs.arg-5}}" \
+          "${{inputs.arg-6}}" \
+          "${{inputs.arg-7}}" \
+          "${{inputs.arg-8}}"; do
+            if [[ ! $arg =~ ";" ]]; then
+              continue
+            fi
+            name=`expr "$arg" : '[[:space:]]*\([^;]*\?\)[[:space:]]*;'`
+            if [[ $name == "" ]]; then
+              echo "Warning: name is empty string."
+              continue
+            fi
+            value=${arg:`expr index "$arg" ';'`}
+            ARGS+=" -f inputs[${name}]=\""${value}"\""
+          done
+          echo "args=$ARGS" >> $GITHUB_OUTPUT
+        shell: bash
+
+    outputs:
+      args: ${{ steps.parse.outputs.args }}
+
+  call:
+    needs: pre
+    runs-on: ubuntu-latest
+    steps:
+      - name: post
+        run: |
+          gh api --method POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          repos/sammnnz/geompy/actions/workflows/${{inputs.workflow_id}}/dispatches -f "ref=${{inputs.ref}}" \
+          ${{needs.pre.outputs.args}}
+        env:
+          GH_TOKEN: ${{ secrets.REMOTE_CALL_SECRET }}
